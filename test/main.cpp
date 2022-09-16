@@ -62,7 +62,7 @@ class Timer {
 };
 
 int main() {
-  const int n = 200000;
+  const int n = 2000000;
   auto in = std::make_unique<int[]>(n);
   for (int i = 0; i < n; i++) in[i] = i + 1;
 
