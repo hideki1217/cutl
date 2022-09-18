@@ -9,9 +9,9 @@ static int collatz(int in) {
   return in;
 }
 
-CollatzMap_1024::CollatzMap_1024() {}
-CollatzMap_1024::~CollatzMap_1024() {}
-void CollatzMap_1024::call(const int* in, int* out, int n) {
+CollatzMap::CollatzMap() {}
+CollatzMap::~CollatzMap() {}
+void CollatzMap::call(const int* in, int* out, int n) {
   for (int i = 0; i < n; i++) {
     out[i] = collatz(in[i]);
   }

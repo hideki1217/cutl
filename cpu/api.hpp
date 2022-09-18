@@ -1,9 +1,9 @@
 namespace cpu {
 
-class CollatzMap_1024 {
+class CollatzMap {
  public:
-  CollatzMap_1024();
-  ~CollatzMap_1024();
+  CollatzMap();
+  ~CollatzMap();
   void call(const int* in, int* out, int n);
 };
 

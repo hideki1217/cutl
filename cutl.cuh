@@ -9,11 +9,10 @@ __global__ void map_unroll(F f, const In* in, Out* out, const int n) {
 
   if (idx >= n) return;
 
-  const int m = min(Unroll, n - idx);
 #pragma unroll
-  for (int i = 0; i < m; i++) {
+  for (int i = 0; i < Unroll; i++) {
     const int x = idx + i * thread_n;
-    out[x] = f(in[x]);
+    if( x<n ) out[x] = f(in[x]);
   }
 }
 

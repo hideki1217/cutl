@@ -5,5 +5,6 @@ if(CUDA_FOUND)
     CUDA_ADD_LIBRARY(gpu STATIC
         api.cu
         )
-    include_directories(gpu PRIVATE ../../include)
+    
+    target_include_directories(gpu PRIVATE ../)
 endif()
