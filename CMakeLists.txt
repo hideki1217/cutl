@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
+
+enable_language(CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 project(cutl_sample VERSION 1.0)
 
 add_subdirectory(cpu)
