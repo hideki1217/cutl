@@ -1,3 +1,5 @@
+#include <cuda_runtime_api.h>
+
 namespace gpu {
 
 template <typename T>
@@ -9,6 +11,7 @@ class CollatzMap {
 
  private:
   device_ptr<int> tile[StreamN];
+  cudaStream_t ss[StreamN];
 
  public:
   CollatzMap();

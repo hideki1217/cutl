@@ -61,8 +61,7 @@ class Timer {
   bool m_bRunning = false;
 };
 
-int main() {
-  const int n = 2000000;
+int test_collatzs(const int n) {
   auto in = std::make_unique<int[]>(n);
   for (int i = 0; i < n; i++) in[i] = i + 1;
 
@@ -90,7 +89,13 @@ int main() {
   timer.stop();
   std::cout << "gpu: " << timer.elapsed_ms() << "(ms)" << std::endl;
 
-  // assert(is_same(out_cpu.get(), out_gpu.get(), n));
+  assert(is_same(out_cpu.get(), out_gpu.get(), n));
+
+  return 0;
+}
+
+int main() {
+  test_collatzs(1024 * 512);
 
   return 0;
 }

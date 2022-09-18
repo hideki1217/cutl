@@ -1,10 +1,10 @@
-#include "./api.hpp"
-
-#include <algorithm>
 #include <cuda_runtime_api.h>
 
-#include "util.hpp"
+#include <algorithm>
+
+#include "./api.hpp"
 #include "cutl.cuh"
+#include "util.hpp"
 
 namespace gpu {
 
@@ -21,27 +21,24 @@ class Collatz {
 
 static constexpr int BlockN = 128;
 CollatzMap::CollatzMap() {
-  for (int i = 0; i < StreamN; i++) cudaMalloc((void**)&tile[i], sizeof(int) * TileN);
+  for (int i = 0; i < StreamN; i++)
+    cudaMalloc((void**)&tile[i], sizeof(int) * TileN);
+  for (int i = 0; i < StreamN; i++)
+    cudaStreamCreateWithFlags(ss + i, cudaStreamNonBlocking);
 }
 CollatzMap::~CollatzMap() {
   for (int i = 0; i < StreamN; i++) cudaFree(tile[i]);
+  for (int i = 0; i < StreamN; i++) cudaStreamDestroy(ss[i]);
 }
 void CollatzMap::call(const int* in, int* out, int n) {
-  cudaStream_t ss[StreamN];
-  for (int i = 0; i < StreamN; i++) cudaStreamCreate(ss + i);
   for (int i = 0; i < n; i += TileN) {
     const int sid = i % StreamN;
     cudaMemcpyAsync(tile[sid], in + i, sizeof(int) * TileN,
                     cudaMemcpyHostToDevice, ss[sid]);
-    cutl::map<<<div_up(TileN, BlockN), BlockN, 0, ss[sid]>>>(
-        Collatz<1024>(), tile[sid], tile[sid], min(TileN, n - i));
-    cutl::map<<<div_up(TileN, BlockN), BlockN, 0, ss[sid]>>>(
-        Collatz<1024>(), tile[sid], tile[sid], min(TileN, n - i));
-    cutl::map<<<div_up(TileN, BlockN), BlockN, 0, ss[sid]>>>(
-        Collatz<1024>(), tile[sid], tile[sid], min(TileN, n - i));
-    cudaMemcpyAsync(out + i, tile[sid], sizeof(int) * util::min(TileN, n - i),
+    cutl::map_unroll<4><<<div_up(TileN, BlockN), BlockN / 4, 0, ss[sid]>>>(
+        Collatz<1024>(), min(TileN, n - i), tile[sid], tile[sid]);
+    cudaMemcpyAsync(out + i, tile[sid], sizeof(int) * min(TileN, n - i),
                     cudaMemcpyDeviceToHost, ss[sid]);
   }
-  for (int i = 0; i < StreamN; i++) cudaStreamDestroy(ss[i]);
 }
 }  // namespace gpu
